@@ -13,7 +13,7 @@ def get_info_banks_for_city(city):
 
     for bank in banks:
         place = bank['Address']['addressLine']
-        address = bank['Address']['streetName'] + ' '+ bank['Address']['buildingNumber']
+        address = bank['Address']['townName'] + ' ' + bank['Address']['streetName'] + ' '+ bank['Address']['buildingNumber']
         latitude_coord = bank['Address']['Geolocation']['GeographicCoordinates']['latitude']
         longitude_coord = bank['Address']['Geolocation']['GeographicCoordinates']['longitude']
         phone = bank['ContactDetails']['phoneNumber']
@@ -48,6 +48,7 @@ def _convert_data_to_text(data):
 
 def is_valid_city(city):
     url = f'https://belarusbank.by/open-banking/v1.0/atms?city={city}'
-    responce = requests.get(url).json()
-    return responce['Data']['ATM'] != None
+    responce = requests.get(url)
+    resp_js = responce.json()
+    return resp_js['Data']['ATM'] != None
     

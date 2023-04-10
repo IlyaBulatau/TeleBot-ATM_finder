@@ -13,5 +13,5 @@ def load_config_token():
 def load_config_yandex_key():
     env = Env()
     env.read_env()
-    key = env('YANDEX_KEY')
+    key = env('YANDEX_MAP')
     return key
