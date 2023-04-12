@@ -4,9 +4,9 @@ from aiogram.filters import Text, Command, StateFilter
 from aiogram.fsm.state import State, StatesGroup, default_state
 from aiogram.fsm.context import FSMContext
 
-from keyboards.keyboards import create_choice_bank_kb, create_get_location_user
-from services.services import get_info_banks_for_city, is_valid_city
-from database.database import users_db, in_user_db, save_coordinate_user
+from keyboards.keyboards import create_choice_bank_kb
+from services.services import get_info_banks_for_city, is_valid_city, create_task
+from database.database import users_db, in_user_db
 
 router = Router()
 
@@ -47,9 +47,10 @@ async def process_not_city(message: Message):
 @router.callback_query(Text(text='BelBank'))
 async def get_info_belarus_bank(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    answers = get_info_banks_for_city(data['city'])
+    answers, address = get_info_banks_for_city(data['city'])
     for answer in answers:
         await callback.message.answer(text=answer)
+    await create_task(address)
     state.clear()
 
 @router.callback_query(Text(text='AlfaBank'))
