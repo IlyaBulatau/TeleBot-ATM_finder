@@ -19,6 +19,7 @@ Telegram bot to find the nearest ATMs and information about them
 3. env\Scripts\activate
 4. git clone https://github.com/IlyaBulatau/TeleBot-ATM_finder.git
 5. pip install requirements.txt
-6. python main.py
+6. in the main.py, insert your Telegram token in line 11
+7. python main.py
 
 
