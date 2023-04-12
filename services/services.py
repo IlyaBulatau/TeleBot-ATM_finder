@@ -2,7 +2,7 @@ import requests
 from pprint import pprint
 from pyppeteer import launch
 import asyncio
-from random import randint
+import os
 
 
 def get_info_banks_for_city(city):
@@ -32,8 +32,9 @@ def get_info_banks_for_city(city):
         })
         addresses.append(address)
     result = _convert_data_to_text(data)
+    create_task(addresses)
     
-    return result, addresses
+    return result
 
 
 def _convert_data_to_text(data):
@@ -66,15 +67,18 @@ async def _get_photo_place(address):
     button = await page.waitForSelector('#searchbox-searchbutton')
 
     await button.click()
-    await asyncio.sleep(3)
+    await asyncio.sleep(5)
 
-    await page.screenshot({'path':f'{address.replace(" ", "_")}.jpg'})
+    await page.screenshot({'path':f'{address.replace(" ", "_").replace("/", "_")}.jpg'})
 
     await browser.close()
 
-async def create_task(adresses):
+def create_task(adresses):
     tasks = []
     for adress in adresses:
         task = asyncio.create_task(_get_photo_place(adress))
         tasks.append(task)
     asyncio.gather(*tasks)
+
+def delete_image_file(file):
+    os.remove(file)

@@ -1,11 +1,11 @@
 from aiogram import Router
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.filters import Text, Command, StateFilter
 from aiogram.fsm.state import State, StatesGroup, default_state
 from aiogram.fsm.context import FSMContext
 
 from keyboards.keyboards import create_choice_bank_kb
-from services.services import get_info_banks_for_city, is_valid_city, create_task
+from services.services import get_info_banks_for_city, is_valid_city, create_task, delete_image_file
 from database.database import users_db, in_user_db
 
 router = Router()
@@ -47,10 +47,18 @@ async def process_not_city(message: Message):
 @router.callback_query(Text(text='BelBank'))
 async def get_info_belarus_bank(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    answers, address = get_info_banks_for_city(data['city'])
+    answers = get_info_banks_for_city(data['city'])
+    
     for answer in answers:
-        await callback.message.answer(text=answer)
-    await create_task(address)
+        file = answer.split("\n\n")[1].replace(" ", "_").replace("/", "_")[8:]
+        while True:
+            try:
+                photo=FSInputFile(f'{file}.jpg')
+                await callback.message.answer_photo(photo=photo, caption=answer)
+                delete_image_file(file=f'{file}.jpg')
+                break
+            except:
+                continue
     state.clear()
 
 @router.callback_query(Text(text='AlfaBank'))
